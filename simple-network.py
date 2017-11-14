@@ -41,7 +41,7 @@ conv2 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
 
 max_pool2 = max_pool(conv2, 'max_pool2')
 
-flat = tf.reshape(max_pool2, (None, 16384))
+flat = tf.reshape(max_pool2, (-1, 16384))
 dim = flat.get_shape()[1].value
 w_fc3 = weight_variable('w_fc3', (dim, 1024))
 b_fc3 = bias_variable('b_fc3', [1024])
@@ -51,7 +51,7 @@ w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
 softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
 
-y_label = tf.placeholder(tf.float32, (BATCH_SIZE, 10))
+y_label = tf.placeholder(tf.float32, (None, 10))
 cross_entropy = tf.reduce_mean(
     tf.nn.softmax_cross_entropy_with_logits(labels=y_label, logits=softmax))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
