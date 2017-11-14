@@ -24,7 +24,7 @@ def gen_variable(name, shape):
                            initializer=tf.random_normal_initializer)
 
 
-data = tf.placeholder(tf.float32, [BATCH_SIZE, 32, 32, 3], 'input')
+data = tf.placeholder(tf.float32, [None, 32, 32, 3], 'input')
 
 conv1 = tf.nn.relu(conv(data, gen_variable('w_conv1', [3, 3, 3, 64])) + gen_variable('b_conv1', [64]))
 conv2 = tf.nn.relu(conv(conv1, gen_variable('w_conv2', [3, 3, 64, 64])) + gen_variable('b_conv2', [64]))
@@ -54,7 +54,7 @@ conv13 = tf.nn.relu(conv(conv12, gen_variable('w_conv13', [3, 3, 512, 512])) + g
 
 max_pool_9 = max_pool(conv13, 'max_pool_9')
 
-flat = tf.reshape(max_pool_9, [64, -1])
+flat = tf.reshape(max_pool_9, [-1, 8192])
 dim = flat.get_shape()[1].value
 fc14 = tf.nn.relu(tf.matmul(flat, gen_variable('w_fc14', [dim, 4096])) +
                   gen_variable('b_fc14', [4096]))
@@ -68,7 +68,7 @@ fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
 softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
 # softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
-y_label = tf.placeholder(tf.float32, [64, 10])
+y_label = tf.placeholder(tf.float32, [None, 10])
 cross_entropy = tf.losses.softmax_cross_entropy(onehot_labels=y_label, logits=softmax)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
