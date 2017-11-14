@@ -3,8 +3,10 @@ import tensorflow as tf
 import scipy
 from kits import utils
 import matplotlib.pyplot as plt
+import os
 
-PATH = 'cifar-10-batches-py'
+PATH = os.path.dirname(__file__)
+PATH = os.path.join(PATH, 'cifar-10-batches-py')
 BATCH_SIZE = 64
 
 
@@ -56,17 +58,17 @@ max_pool_9 = max_pool(conv9, 'max_pool_9')
 flat = tf.reshape(max_pool_9, [64, -1])
 dim = flat.get_shape()[1].value
 fc14 = tf.nn.relu(tf.matmul(flat, gen_variable('w_fc14', [dim, 4096])) +
-                  gen_variable('b_fc14', [64]))
+                  gen_variable('b_fc14', [4096]))
 
 fc15 = tf.nn.relu(tf.matmul(fc14, gen_variable('w_fc15', [4096, 4096])) +
-                  gen_variable('b_fc15', [64]))
+                  gen_variable('b_fc15', [4096]))
 
 fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
-                  gen_variable('b_fc16', [64]))
+                  gen_variable('b_fc16', [1000]))
 
-softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 64))
+softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
 
-y_label = tf.placeholder(numpy.int16, [64, 1])
+y_label = tf.placeholder(numpy.float32, [64, 1])
 cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
@@ -77,7 +79,7 @@ data_set = utils.read_data(PATH)
 sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
-    batch = data_set.next_batch(64)
+    batch = data_set.next_batch_data(64)
     if i % 1000 == 0:
         train_accuracy = accuracy.eval(feed_dict={
             data: batch['data'], y_label: batch['labels']})
