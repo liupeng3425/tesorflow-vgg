@@ -68,8 +68,8 @@ fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
 
 softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
 
-y_label = tf.placeholder(numpy.float32, [64, 1])
-cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
+y_label = tf.placeholder(numpy.float32, [64, 10])
+cross_entropy = tf.losses.softmax_cross_entropy(y_label, softmax)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
