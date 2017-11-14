@@ -88,8 +88,6 @@ for i in range(10000):
     batch = data_set.next_batch_data(64)
 
     sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
-    # for var in tf.trainable_variables():
-    #     print(var)
 
     if i % 50 == 0:
         loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
