@@ -27,7 +27,7 @@ def bias_variable(name, shape):
     return tf.Variable(initial, name=name)
 
 
-data = tf.placeholder(tf.float32, [None, 32, 32, 3], 'input')
+data = tf.placeholder(tf.float32, [BATCH_SIZE, 32, 32, 3], 'input')
 
 conv1 = tf.nn.relu(conv(data, weight_variable('w_conv1', [3, 3, 3, 64])) + bias_variable('b_conv1', [64]))
 conv2 = tf.nn.relu(conv(conv1, weight_variable('w_conv2', [3, 3, 64, 64])) + bias_variable('b_conv2', [64]))
@@ -57,7 +57,7 @@ conv13 = tf.nn.relu(conv(conv12, weight_variable('w_conv13', [3, 3, 512, 512])) 
 
 max_pool_13 = max_pool(conv13, 'max_pool_13')
 
-flat = tf.reshape(max_pool_13, [-1, 8192])
+flat = tf.reshape(max_pool_13, [BATCH_SIZE, -1])
 dim = flat.get_shape()[1].value
 fc14 = tf.nn.relu(tf.matmul(flat, weight_variable('w_fc14', [dim, 4096])) +
                   bias_variable('b_fc14', [4096]))
@@ -68,10 +68,10 @@ fc15 = tf.nn.relu(tf.matmul(fc14, weight_variable('w_fc15', [4096, 4096])) +
 fc16 = tf.nn.relu(tf.matmul(fc15, weight_variable('w_fc16', [4096, 1000])) +
                   bias_variable('b_fc16', [1000]))
 
-softmax = tf.nn.softmax(tf.matmul(fc16, weight_variable('w_softmax', [1000, 10])) + bias_variable('b_softmax', 10))
+softmax = tf.nn.softmax(tf.matmul(fc16, weight_variable('w_softmax', [1000, 10])) + bias_variable('b_softmax', [10]))
 # softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
-y_label = tf.placeholder(tf.float32, [None, 10])
+y_label = tf.placeholder(tf.float32, [BATCH_SIZE, 10])
 cross_entropy = tf.losses.softmax_cross_entropy(logits=softmax, onehot_labels=y_label)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
@@ -82,7 +82,7 @@ data_set = utils.read_data(PATH)
 sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
-    batch = data_set.next_batch_data(64)
+    batch = data_set.next_batch_data(BATCH_SIZE)
 
     sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
