@@ -80,7 +80,7 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(64)
-    if i % 1000 == 0:
+    if i % 100 == 0:
         train_accuracy = accuracy.eval(feed_dict={
             data: batch['data'], y_label: batch['labels']})
         print("step %d, training accuracy %g" % (i, train_accuracy))

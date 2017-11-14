@@ -51,7 +51,7 @@ class DataSet(object):
                                           self.data_set['data'][0:left_number],
                                           axis=0)
             result['labels'] = numpy.append(result['labels'],
-                                            self.data_set['labels'][0, left_number],
+                                            self.data_set['labels'][0:left_number],
                                             axis=0)
             self.__batch_index_data = left_number
         else:
