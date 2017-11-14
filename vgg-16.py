@@ -18,10 +18,16 @@ def max_pool(input_img, name):
 
 
 def gen_variable(name, shape):
-    return tf.get_variable(name=name,
-                           shape=shape,
-                           dtype=tf.float32,
-                           initializer=tf.contrib.layers.xavier_initializer())
+    if len(shape) == 4:
+        weight = tf.get_variable(name=name,
+                                 shape=shape,
+                                 dtype=tf.float32,
+                                 initializer=tf.contrib.layers.xavier_initializer())
+    else:
+        weight = tf.get_variable(name=name,
+                                 dtype=tf.float32,
+                                 initializer=tf.constant(0.0, shape=shape))
+    return weight
 
 
 data = tf.placeholder(tf.float32, [None, 32, 32, 3], 'input')
@@ -65,7 +71,7 @@ fc15 = tf.nn.relu(tf.matmul(fc14, gen_variable('w_fc15', [4096, 4096])) +
 fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
                   gen_variable('b_fc16', [1000]))
 
-softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
+softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', [10]))
 # softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
 y_label = tf.placeholder(tf.float32, [None, 10])
