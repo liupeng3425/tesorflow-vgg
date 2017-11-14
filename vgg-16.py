@@ -82,7 +82,7 @@ for i in range(10000):
     batch = data_set.next_batch_data(64)
     if i % 100 == 0:
         train_accuracy = accuracy.eval(feed_dict={
-            data: batch['data'], y_label: batch['labels']})
+            data: batch['data'], y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g" % (i, train_accuracy))
     train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
