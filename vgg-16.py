@@ -4,7 +4,7 @@ import scipy
 from kits import utils
 import matplotlib.pyplot as plt
 
-PATH = '/Users/peng/workspace/PycharmProjects/vgg/cifar-10-batches-py'
+PATH = 'cifar-10-batches-py'
 BATCH_SIZE = 64
 
 
