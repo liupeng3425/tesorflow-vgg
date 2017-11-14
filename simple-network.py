@@ -65,7 +65,7 @@ sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(BATCH_SIZE)
 
-    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
+    sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
 
