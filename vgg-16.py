@@ -84,7 +84,7 @@ for i in range(10000):
         train_accuracy = accuracy.eval(feed_dict={
             data: batch['data'], y_label: batch['labels']})
         print("step %d, training accuracy %g" % (i, train_accuracy))
-    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels']})
+    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
-    data: data_set.test_set['data'], y_label: data_set.test_set['labels']}))
+    data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
