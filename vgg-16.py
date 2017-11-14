@@ -21,7 +21,7 @@ def gen_variable(name, shape):
     return tf.get_variable(name=name,
                            shape=shape,
                            dtype=tf.float32,
-                           initializer=tf.random_normal_initializer)
+                           initializer=tf.contrib.layers.xavier_initializer)
 
 
 data = tf.placeholder(tf.float32, [None, 32, 32, 3], 'input')
