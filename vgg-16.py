@@ -65,11 +65,11 @@ fc15 = tf.nn.relu(tf.matmul(fc14, gen_variable('w_fc15', [4096, 4096])) +
 fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
                   gen_variable('b_fc16', [1000]))
 
-softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
-# softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
+# softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
+softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
 y_label = tf.placeholder(tf.float32, [None, 10])
-cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
+cross_entropy = tf.nn.softmax_cross_entropy_with_logits(labels=y_label, logits=softmax)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
@@ -80,18 +80,14 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(64)
+    _, loss, train_accuracy = sess.run([train_step, cross_entropy, accuracy],
+                                       feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
     train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
     if i % 50 == 0:
-        print("step %d, training accuracy %g, cross entropy %g" % (i,
-                                                                   accuracy.eval(feed_dict={data: batch['data'],
-                                                                                            y_label: batch[
-                                                                                                'labels_one_hot']}),
-                                                                   cross_entropy.eval(feed_dict={data: batch['data'],
-                                                                                                 y_label: batch[
-                                                                                                     'labels_one_hot']})))
+        print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
 
-    print("test accuracy %g" % accuracy.eval(feed_dict={
-        data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
+print("test accuracy %g" % accuracy.eval(feed_dict={
+    data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
