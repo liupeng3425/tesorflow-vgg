@@ -52,7 +52,7 @@ conv11 = tf.nn.relu(conv(conv10, gen_variable('w_conv11', [3, 3, 512, 512])) + g
 conv12 = tf.nn.relu(conv(conv11, gen_variable('w_conv12', [3, 3, 512, 512])) + gen_variable('b_conv12', [512]))
 conv13 = tf.nn.relu(conv(conv12, gen_variable('w_conv13', [3, 3, 512, 512])) + gen_variable('b_conv13', [512]))
 
-max_pool_9 = max_pool(conv9, 'max_pool_9')
+max_pool_9 = max_pool(conv13, 'max_pool_9')
 
 flat = tf.reshape(max_pool_9, [64, -1])
 dim = flat.get_shape()[1].value
@@ -82,8 +82,9 @@ for i in range(10000):
     batch = data_set.next_batch_data(64)
     _, loss, train_accuracy, pre_label = sess.run([train_step, cross_entropy, accuracy, softmax],
                                                   feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
-
-    if i % 10 == 0:
+    # for var in tf.trainable_variables():
+    #     print(var)
+    if i % 50 == 0:
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
