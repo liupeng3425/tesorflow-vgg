@@ -23,7 +23,7 @@ def gen_variable(name, shape):
                            initializer=tf.random_uniform_initializer)
 
 
-data = tf.placeholder(numpy.float32, [BATCH_SIZE, 3, 32, 32], 'input')
+data = tf.placeholder(numpy.float32, [BATCH_SIZE, 32, 32, 3], 'input')
 
 conv1 = tf.nn.relu(conv(data, gen_variable('w_conv1', [3, 3, 3, 64])) + gen_variable('b_conv1', [64]))
 conv2 = tf.nn.relu(conv(conv1, gen_variable('w_conv2', [3, 3, 64, 64])) + gen_variable('b_conv2', [64]))
