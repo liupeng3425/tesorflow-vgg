@@ -80,13 +80,14 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(64)
-    _, loss, train_accuracy = sess.run([train_step, cross_entropy, accuracy],
-                                       feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
     train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
     if i % 50 == 0:
+        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
+                                                    feed_dict={data: batch['data'],
+                                                               y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
