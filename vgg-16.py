@@ -1,9 +1,8 @@
-import numpy
-import tensorflow as tf
-import scipy
-from kits import utils
-import matplotlib.pyplot as plt
 import os
+
+import tensorflow as tf
+
+from kits import utils
 
 PATH = os.path.dirname(__file__)
 PATH = os.path.join(PATH, 'cifar-10-batches-py')
@@ -21,11 +20,11 @@ def max_pool(input_img, name):
 def gen_variable(name, shape):
     return tf.get_variable(name=name,
                            shape=shape,
-                           dtype=numpy.float32,
-                           initializer=tf.random_uniform_initializer)
+                           dtype=tf.float32,
+                           initializer=tf.random_normal_initializer)
 
 
-data = tf.placeholder(numpy.float32, [BATCH_SIZE, 32, 32, 3], 'input')
+data = tf.placeholder(tf.float32, [BATCH_SIZE, 32, 32, 3], 'input')
 
 conv1 = tf.nn.relu(conv(data, gen_variable('w_conv1', [3, 3, 3, 64])) + gen_variable('b_conv1', [64]))
 conv2 = tf.nn.relu(conv(conv1, gen_variable('w_conv2', [3, 3, 64, 64])) + gen_variable('b_conv2', [64]))
@@ -67,9 +66,10 @@ fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
                   gen_variable('b_fc16', [1000]))
 
 softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
+# softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
-y_label = tf.placeholder(numpy.float32, [64, 10])
-cross_entropy = tf.losses.softmax_cross_entropy(y_label, softmax)
+y_label = tf.placeholder(tf.float32, [64, 10])
+cross_entropy = tf.losses.softmax_cross_entropy(onehot_labels=y_label, logits=softmax)
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
@@ -80,11 +80,11 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(64)
-    if i % 100 == 0:
-        train_accuracy = accuracy.eval(feed_dict={
-            data: batch['data'], y_label: batch['labels_one_hot']})
-        print("step %d, training accuracy %g" % (i, train_accuracy))
-    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
+    _, loss, train_accuracy, pre_label = sess.run([train_step, cross_entropy, accuracy, softmax],
+                                                  feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
+
+    if i % 10 == 0:
+        print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
     data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))

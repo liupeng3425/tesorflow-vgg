@@ -23,9 +23,9 @@ class DataSet(object):
         self.data_set['data'] = numpy.transpose(self.data_set['data'], [0, 2, 3, 1])
         self.test_set['data'] = numpy.reshape(self.test_set['data'], [-1, 3, 32, 32])
         self.test_set['data'] = numpy.transpose(self.test_set['data'], [0, 2, 3, 1])
-        self.data_set['labels'] = numpy.reshape(self.data_set['labels'], [-1, 1])
+        self.data_set['labels'] = numpy.reshape(self.data_set['labels'], [-1])
         self.data_set['labels_one_hot'] = numpy.eye(10)[self.data_set['labels']]
-        self.test_set['labels'] = numpy.reshape(self.test_set['labels'], [-1, 1])
+        self.test_set['labels'] = numpy.reshape(self.test_set['labels'], [-1])
         self.test_set['labels_one_hot'] = numpy.eye(10)[self.test_set['labels']]
 
     def next_batch_data(self, batch_size):
@@ -35,10 +35,12 @@ class DataSet(object):
             numpy.random.shuffle(perm)
             self.data_set['data'] = self.data_set['data'][perm]
             self.data_set['labels'] = self.data_set['labels'][perm]
+            self.data_set['labels_one_hot'] = self.data_set['labels_one_hot'][perm]
 
         if batch_size + self.__batch_index_data > self.data_number:
             result = {'data': self.data_set['data'][self.__batch_index_data:self.data_number],
-                      'labels': self.data_set['labels'][self.__batch_index_data:self.data_number]}
+                      'labels': self.data_set['labels'][self.__batch_index_data:self.data_number],
+                      'labels_one_hot': self.data_set['labels_one_hot'][self.__batch_index_data:self.data_number]}
 
             self.__batch_index_data = 0
 
@@ -47,6 +49,7 @@ class DataSet(object):
             numpy.random.shuffle(perm)
             self.data_set['data'] = self.data_set['data'][perm]
             self.data_set['labels'] = self.data_set['labels'][perm]
+            self.data_set['labels_one_hot'] = self.data_set['labels_one_hot'][perm]
 
             left_number = batch_size - result['data'].shape[0]
             result['data'] = numpy.append(result['data'],
@@ -55,10 +58,15 @@ class DataSet(object):
             result['labels'] = numpy.append(result['labels'],
                                             self.data_set['labels'][0:left_number],
                                             axis=0)
+            result['labels_one_hot'] = numpy.append(result['labels_one_hot'],
+                                                    self.data_set['labels_one_hot'][0:left_number],
+                                                    axis=0)
             self.__batch_index_data = left_number
         else:
             result = {'data': self.data_set['data'][self.__batch_index_data:self.__batch_index_data + batch_size],
-                      'labels': self.data_set['labels'][self.__batch_index_data:self.__batch_index_data + batch_size]}
+                      'labels': self.data_set['labels'][self.__batch_index_data:self.__batch_index_data + batch_size],
+                      'labels_one_hot': self.data_set['labels_one_hot'][
+                                        self.__batch_index_data:self.__batch_index_data + batch_size]}
             self.__batch_index_data += batch_size
 
         self.__epochs_completed += 1
