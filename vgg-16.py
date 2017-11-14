@@ -65,8 +65,8 @@ fc15 = tf.nn.relu(tf.matmul(fc14, gen_variable('w_fc15', [4096, 4096])) +
 fc16 = tf.nn.relu(tf.matmul(fc15, gen_variable('w_fc16', [4096, 1000])) +
                   gen_variable('b_fc16', [1000]))
 
-# softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
-softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
+softmax = tf.nn.softmax(tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10))
+# softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
 
 y_label = tf.placeholder(tf.float32, [None, 10])
 cross_entropy = tf.losses.softmax_cross_entropy(logits=softmax, onehot_labels=y_label)
