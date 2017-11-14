@@ -27,7 +27,7 @@ def bias_variable(name, shape):
     return tf.Variable(initial, name=name)
 
 
-data = tf.placeholder(tf.float32, (BATCH_SIZE, 32, 32, 3))
+data = tf.placeholder(tf.float32, (None, 32, 32, 3))
 
 w_conv1 = weight_variable('w_conv1', (3, 3, 3, 64))
 b_conv1 = bias_variable('b_conv1', [64])
@@ -41,7 +41,7 @@ conv2 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
 
 max_pool2 = max_pool(conv2, 'max_pool2')
 
-flat = tf.reshape(max_pool2, (BATCH_SIZE, -1))
+flat = tf.reshape(max_pool2, (None, 16384))
 dim = flat.get_shape()[1].value
 w_fc3 = weight_variable('w_fc3', (dim, 1024))
 b_fc3 = bias_variable('b_fc3', [1024])
