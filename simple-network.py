@@ -30,25 +30,25 @@ def bias_variable(name, shape):
 data = tf.placeholder(tf.float32, (BATCH_SIZE, 32, 32, 3))
 
 w_conv1 = weight_variable('w_conv1', (3, 3, 3, 64))
-b_conv1 = bias_variable('b_conv1', 64)
+b_conv1 = bias_variable('b_conv1', [64])
 conv1 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
 
 max_pool1 = max_pool(conv1, 'max_pool1')
 
 w_conv2 = weight_variable('w_conv2', (3, 3, 64, 64))
-b_conv2 = bias_variable('b_conv2', 64)
+b_conv2 = bias_variable('b_conv2', [64])
 conv2 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
 
 max_pool2 = max_pool(conv2, 'max_pool2')
 
 flat = tf.reshape(max_pool2, (BATCH_SIZE, -1))
-dim = flat.get_shape()[1]
+dim = flat.get_shape()[1].value
 w_fc3 = weight_variable('w_fc3', (dim, 1024))
-b_fc3 = bias_variable('b_fc3', 1024)
-fc3 = tf.nn.relu(tf.matmul(max_pool2, w_fc3) + b_fc3)
+b_fc3 = bias_variable('b_fc3', [1024])
+fc3 = tf.nn.relu(tf.matmul(flat, w_fc3) + b_fc3)
 
 w_softmax = weight_variable('w_softmax', (1024, 10))
-b_softmax = bias_variable('b_softmax', 10)
+b_softmax = bias_variable('b_softmax', [10])
 softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
 
 y_label = tf.placeholder(tf.float32, (BATCH_SIZE, 10))
@@ -78,4 +78,3 @@ for i in range(10000):
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
     data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
-
