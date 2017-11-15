@@ -37,7 +37,7 @@ max_pool1 = max_pool(conv1, 'max_pool1')
 
 w_conv2 = weight_variable('w_conv2', (3, 3, 64, 64))
 b_conv2 = bias_variable('b_conv2', [64])
-conv2 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
+conv2 = tf.nn.relu(conv(max_pool1, w_conv2) + b_conv2)
 
 max_pool2 = max_pool(conv2, 'max_pool2')
 
