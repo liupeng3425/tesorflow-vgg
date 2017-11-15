@@ -62,12 +62,8 @@ dim = flat.get_shape()[1].value
 fc14 = tf.nn.relu(tf.matmul(flat, weight_variable('w_fc14', [dim, 4096])) +
                   bias_variable('b_fc14', [4096]))
 
-fc14 = tf.nn.dropout(fc14, 0.5)
-
 fc15 = tf.nn.relu(tf.matmul(fc14, weight_variable('w_fc15', [4096, 4096])) +
                   bias_variable('b_fc15', [4096]))
-
-fc15 = tf.nn.dropout(fc15, 0.5)
 
 fc16 = tf.nn.relu(tf.matmul(fc15, weight_variable('w_fc16', [4096, 1000])) +
                   bias_variable('b_fc16', [1000]))
