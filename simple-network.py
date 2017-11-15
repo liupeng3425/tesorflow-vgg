@@ -41,7 +41,7 @@ conv2 = tf.nn.relu(conv(max_pool1, w_conv2) + b_conv2)
 
 max_pool2 = max_pool(conv2, 'max_pool2')
 
-flat = tf.reshape(max_pool2, (-1, 16384))
+flat = tf.reshape(max_pool2, (-1, 4096))
 dim = flat.get_shape()[1].value
 w_fc3 = weight_variable('w_fc3', (dim, 1024))
 b_fc3 = bias_variable('b_fc3', [1024])
