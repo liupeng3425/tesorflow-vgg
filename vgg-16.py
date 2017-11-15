@@ -37,9 +37,9 @@ max_pool_2 = max_pool(conv2, 'max_pool_2')
 conv3 = tf.nn.relu(conv(max_pool_2, weight_variable('w_conv3', [3, 3, 64, 128])) + bias_variable('b_conv3', [128]))
 conv4 = tf.nn.relu(conv(conv3, weight_variable('w_conv4', [3, 3, 128, 128])) + bias_variable('b_conv4', [128]))
 
-max_pool_4 = max_pool(conv4, 'max_pool_4')
+# max_pool_4 = max_pool(conv4, 'max_pool_4')
 
-conv5 = tf.nn.relu(conv(max_pool_4, weight_variable('w_conv5', [3, 3, 128, 256])) + bias_variable('b_conv5', [256]))
+conv5 = tf.nn.relu(conv(conv4, weight_variable('w_conv5', [3, 3, 128, 256])) + bias_variable('b_conv5', [256]))
 conv6 = tf.nn.relu(conv(conv5, weight_variable('w_conv6', [3, 3, 256, 256])) + bias_variable('b_conv6', [256]))
 conv7 = tf.nn.relu(conv(conv6, weight_variable('w_conv7', [3, 3, 256, 256])) + bias_variable('b_conv7', [256]))
 
@@ -49,15 +49,15 @@ conv8 = tf.nn.relu(conv(max_pool_7, weight_variable('w_conv8', [3, 3, 256, 512])
 conv9 = tf.nn.relu(conv(conv8, weight_variable('w_conv9', [3, 3, 512, 512])) + bias_variable('b_conv9', [512]))
 conv10 = tf.nn.relu(conv(conv9, weight_variable('w_conv10', [3, 3, 512, 512])) + bias_variable('b_conv10', [512]))
 
-max_pool_9 = max_pool(conv10, 'max_pool_9')
+# max_pool_9 = max_pool(conv10, 'max_pool_9')
 
-conv11 = tf.nn.relu(conv(max_pool_9, weight_variable('w_conv11', [3, 3, 512, 512])) + bias_variable('b_conv11', [512]))
+conv11 = tf.nn.relu(conv(conv10, weight_variable('w_conv11', [3, 3, 512, 512])) + bias_variable('b_conv11', [512]))
 conv12 = tf.nn.relu(conv(conv11, weight_variable('w_conv12', [3, 3, 512, 512])) + bias_variable('b_conv12', [512]))
 conv13 = tf.nn.relu(conv(conv12, weight_variable('w_conv13', [3, 3, 512, 512])) + bias_variable('b_conv13', [512]))
 
 max_pool_13 = max_pool(conv13, 'max_pool_13')
 
-flat = tf.reshape(max_pool_13, [-1, 512])
+flat = tf.reshape(max_pool_13, [-1, 8192])
 dim = flat.get_shape()[1].value
 fc14 = tf.nn.relu(tf.matmul(flat, weight_variable('w_fc14', [dim, 4096])) +
                   bias_variable('b_fc14', [4096]))
