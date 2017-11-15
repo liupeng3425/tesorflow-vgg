@@ -105,4 +105,4 @@ for i in range(10000):
             data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]}))
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
-    data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
+    data: data_set.test_set['data'][4000, 8000], y_label: data_set.test_set['labels_one_hot'][4000, 8000]}))
