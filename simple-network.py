@@ -46,10 +46,16 @@ w_fc3 = weight_variable('w_fc3', (dim, 1024))
 b_fc3 = bias_variable('b_fc3', [1024])
 fc3 = tf.nn.relu(tf.matmul(flat, w_fc3) + b_fc3)
 
+w_fc4 = weight_variable('w_fc4', (1024, 1024))
+b_fc4 = bias_variable('b_fc44', [1024])
+fc4 = tf.nn.relu(tf.matmul(fc3, w_fc4) + b_fc4)
+
+fc4 = tf.nn.dropout(fc4, 0.5)
+
 w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
 # softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
-softmax = tf.matmul(fc3, w_softmax) + b_softmax
+softmax = tf.matmul(fc4, w_softmax) + b_softmax
 
 y_label = tf.placeholder(tf.float32, (None, 10))
 cross_entropy = tf.reduce_mean(
