@@ -8,7 +8,6 @@ PATH = os.path.dirname(__file__)
 PATH = os.path.join(PATH, 'cifar-10-batches-py')
 BATCH_SIZE = 64
 
-
 def conv(input_img, kernel_size):
     return tf.nn.conv2d(input_img, kernel_size, padding='SAME', strides=[1, 1, 1, 1])
 
@@ -49,7 +48,8 @@ fc3 = tf.nn.relu(tf.matmul(flat, w_fc3) + b_fc3)
 
 w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
-softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
+# softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
+softmax = tf.matmul(fc3, w_softmax) + b_softmax
 
 y_label = tf.placeholder(tf.float32, (None, 10))
 cross_entropy = tf.reduce_mean(
@@ -64,17 +64,15 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(BATCH_SIZE)
-
     sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
 
-    if i % 50 == 0:
-        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
-                                                    feed_dict={data: batch['data'],
-                                                               y_label: batch['labels_one_hot']})
-        print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
-        print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
+    if i % 500 == 0:
+        # loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
+        #                                             feed_dict={data: batch['data'],
+        #                                                        y_label: batch['labels_one_hot']})
+        # print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
 
