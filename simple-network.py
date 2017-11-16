@@ -57,7 +57,7 @@ fc4 = tf.nn.dropout(fc4, 0.5)
 w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
 # softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
-softmax = tf.nn.softmax(tf.matmul(fc4, w_softmax) + b_softmax, dim=1)
+softmax = tf.nn.softmax(tf.matmul(fc4, w_softmax) + b_softmax)
 
 y_label = tf.placeholder(tf.float32, (None, 10))
 cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
@@ -80,8 +80,11 @@ for i in range(10000):
                                                     feed_dict={data: batch['data'],
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
-        print('label:\n' + str(batch['labels_one_hot'][0]) + '\nprediction:\n' + str(prediction[0]))
-        print('prediction sum:' + str(numpy.sum(prediction[0])))
+        print('label:')
+        print(batch['labels_one_hot'])
+        print('prediction:')
+        print(prediction)
+        print('prediction sum:' + str(numpy.sum(prediction)))
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
 
