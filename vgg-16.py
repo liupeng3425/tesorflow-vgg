@@ -18,7 +18,7 @@ def max_pool(input_img, name):
 
 
 def weight_variable(name, shape):
-    initial = tf.truncated_normal(shape, stddev=0.1)
+    initial = tf.truncated_normal(shape, stddev=0.001)
     return tf.Variable(initial, name=name)
 
 
