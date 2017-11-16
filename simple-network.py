@@ -57,11 +57,10 @@ fc4 = tf.nn.dropout(fc4, 0.5)
 w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
 # softmax = tf.nn.softmax(tf.matmul(fc3, w_softmax) + b_softmax)
-softmax = tf.matmul(fc4, w_softmax) + b_softmax
+softmax = tf.nn.softmax(tf.matmul(fc4, w_softmax) + b_softmax, dim=1)
 
 y_label = tf.placeholder(tf.float32, (None, 10))
-cross_entropy = tf.reduce_mean(
-    tf.nn.softmax_cross_entropy_with_logits(labels=y_label, logits=softmax))
+cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
 train_step = tf.train.AdamOptimizer(1e-4).minimize(cross_entropy)
 correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
