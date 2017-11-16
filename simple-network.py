@@ -8,6 +8,7 @@ PATH = os.path.dirname(__file__)
 PATH = os.path.join(PATH, 'cifar-10-batches-py')
 BATCH_SIZE = 64
 
+
 def conv(input_img, kernel_size):
     return tf.nn.conv2d(input_img, kernel_size, padding='SAME', strides=[1, 1, 1, 1])
 
@@ -28,13 +29,13 @@ def bias_variable(name, shape):
 
 data = tf.placeholder(tf.float32, (None, 32, 32, 3))
 
-w_conv1 = weight_variable('w_conv1', (3, 3, 3, 64))
+w_conv1 = weight_variable('w_conv1', (5, 5, 3, 64))
 b_conv1 = bias_variable('b_conv1', [64])
 conv1 = tf.nn.relu(conv(data, w_conv1) + b_conv1)
 
 max_pool1 = max_pool(conv1, 'max_pool1')
 
-w_conv2 = weight_variable('w_conv2', (3, 3, 64, 64))
+w_conv2 = weight_variable('w_conv2', (5, 5, 64, 64))
 b_conv2 = bias_variable('b_conv2', [64])
 conv2 = tf.nn.relu(conv(max_pool1, w_conv2) + b_conv2)
 
