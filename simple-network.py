@@ -71,7 +71,6 @@ sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(BATCH_SIZE)
-    sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
 
@@ -87,6 +86,8 @@ for i in range(10000):
         print('prediction sum:' + str(numpy.sum(prediction)))
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
+
+    sess.run(train_step, feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
     data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
