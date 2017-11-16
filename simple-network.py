@@ -75,7 +75,7 @@ for i in range(10000):
     #     print(var)
 
     if i % 500 == 0:
-        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, fc4],
+        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, conv1],
                                                     feed_dict={data: batch['data'],
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
