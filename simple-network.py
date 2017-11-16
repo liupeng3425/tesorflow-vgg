@@ -52,7 +52,7 @@ w_fc4 = weight_variable('w_fc4', (1024, 1024))
 b_fc4 = bias_variable('b_fc44', [1024])
 fc4 = tf.nn.relu(tf.matmul(fc3, w_fc4) + b_fc4)
 
-fc4 = tf.nn.dropout(fc4, 0.5)
+# fc4 = tf.nn.dropout(fc4, 0.5)
 
 w_softmax = weight_variable('w_softmax', (1024, 10))
 b_softmax = bias_variable('b_softmax', [10])
@@ -75,7 +75,7 @@ for i in range(10000):
     #     print(var)
 
     if i % 500 == 0:
-        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
+        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, fc4],
                                                     feed_dict={data: batch['data'],
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
