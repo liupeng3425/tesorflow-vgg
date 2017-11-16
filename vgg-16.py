@@ -84,7 +84,6 @@ sess.run(tf.global_variables_initializer())
 for i in range(10000):
     batch = data_set.next_batch_data(BATCH_SIZE)
 
-    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
     # for var in tf.trainable_variables():
     #     print(var)
 
@@ -94,9 +93,12 @@ for i in range(10000):
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
         # print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
+        print(prediction)
     if i % 500 == 0:
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]}))
+
+    train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
 print("test accuracy %g" % accuracy.eval(feed_dict={
     data: data_set.test_set['data'][4000, 8000], y_label: data_set.test_set['labels_one_hot'][4000:8000]}))
