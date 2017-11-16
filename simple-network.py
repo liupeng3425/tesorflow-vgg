@@ -81,8 +81,8 @@ for i in range(10000):
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
         # print('label:')
         # print(batch['labels_one_hot'])
-        # print('prediction:')
-        # print(prediction)
+        print('prediction:')
+        print(prediction)
         # print('prediction sum:' + str(numpy.sum(prediction)))
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
