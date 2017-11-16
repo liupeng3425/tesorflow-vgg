@@ -141,3 +141,4 @@ out
 gen
 .idea/
 cifar-10-batches-py/
+/MNIST_data/
