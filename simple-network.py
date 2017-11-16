@@ -80,6 +80,7 @@ for i in range(10000):
                                                     feed_dict={data: batch['data'],
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
+        print('label:\n' + batch['labels_one_hot'][0] + '\nprediction:\n' + prediction[0])
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'], y_label: data_set.test_set['labels_one_hot']}))
 
