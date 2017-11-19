@@ -8,14 +8,14 @@ class DataSet(object):
         self.__epochs_completed = 0
         assert len(data_files) > 0
         first_file = utils.unpickle(data_files[0])
-        self.data_set = {'data': first_file[b'data'], 'labels': first_file[b'labels']}
+        self.data_set = {'data': first_file['data'], 'labels': first_file['labels']}
         for file in data_files[1:]:
             data = utils.unpickle(file)
-            self.data_set['data'] = numpy.append(self.data_set['data'], data[b'data'], axis=0)
-            self.data_set['labels'] = numpy.append(self.data_set['labels'], data[b'labels'], axis=0)
+            self.data_set['data'] = numpy.append(self.data_set['data'], data['data'], axis=0)
+            self.data_set['labels'] = numpy.append(self.data_set['labels'], data['labels'], axis=0)
 
         test_file = utils.unpickle(test_files)
-        self.test_set = {'data': test_file[b'data'], 'labels': test_file[b'labels']}
+        self.test_set = {'data': test_file['data'], 'labels': test_file['labels']}
         self.data_number = self.data_set['data'].shape[0]
         self.test_number = self.test_set['data'].shape[0]
 

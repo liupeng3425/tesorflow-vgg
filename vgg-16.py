@@ -29,7 +29,7 @@ def bias_variable(name, shape):
 
 
 block_filter_num = (64, 128, 128, 256, 256)
-fc_neural_num = (128, 128, 64)
+fc_neural_num = (128, 128, 10)
 softmax_output_num = 10
 
 num_of_maxpool = 5
@@ -88,18 +88,13 @@ fc14 = tf.nn.relu(tf.matmul(flat, weight_variable('w_fc14', [dim, fc_neural_num[
 fc15 = tf.nn.relu(tf.matmul(fc14, weight_variable('w_fc15', [fc_neural_num[0], fc_neural_num[1]])) +
                   bias_variable('b_fc15', [fc_neural_num[1]]))
 
-fc16 = tf.nn.relu(tf.matmul(fc15, weight_variable('w_fc16', [fc_neural_num[1], fc_neural_num[2]])) +
-                  bias_variable('b_fc16', [fc_neural_num[2]]))
-
-softmax = tf.matmul(fc16, weight_variable('w_softmax', [fc_neural_num[2], softmax_output_num])) + \
-          bias_variable('b_softmax', [softmax_output_num])
-softmax = tf.nn.softmax(softmax)
-# softmax = tf.matmul(fc16, gen_variable('w_softmax', [1000, 10])) + gen_variable('b_softmax', 10)
+fc16 = tf.matmul(fc15, weight_variable('w_fc16', [fc_neural_num[1], softmax_output_num])) + \
+       bias_variable('b_fc16', [softmax_output_num])
 
 y_label = tf.placeholder(tf.float32, [None, softmax_output_num])
-cross_entropy = -tf.reduce_sum(y_label * tf.log(softmax))
+cross_entropy = tf.losses.softmax_cross_entropy(y_label, fc16)
 train_step = tf.train.AdamOptimizer(1e-2).minimize(cross_entropy)
-correct_prediction = tf.equal(tf.argmax(softmax, 1), tf.argmax(y_label, 1))
+correct_prediction = tf.equal(tf.argmax(fc16, 1), tf.argmax(y_label, 1))
 accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
 
 data_set = utils.read_data(PATH)
@@ -113,15 +108,15 @@ for i in range(40000):
     #     print(var)
 
     if i % 250 == 0:
-        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
+        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, fc16],
                                                     feed_dict={data: batch['data'],
                                                                y_label: batch['labels_one_hot']})
         print("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
         # print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
-        print('prediction:')
-        print(prediction[0:2])
-        print('prediction_sum')
-        print(numpy.sum(prediction[0:2], axis=1))
+        # print('prediction:')
+        # print(prediction[0:2])
+        # print('prediction_sum')
+        # print(numpy.sum(prediction[0:2], axis=1))
     if i % 500 == 0:
         print("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]}))

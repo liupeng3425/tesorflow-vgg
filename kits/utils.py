@@ -4,7 +4,7 @@ from kits.DataSet import DataSet
 def unpickle(file):
     import pickle
     with open(file, 'rb') as fo:
-        result = pickle.load(fo, encoding='bytes')
+        result = pickle.load(fo, encoding='latin1')
     return result
 
 
