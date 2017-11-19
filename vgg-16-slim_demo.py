@@ -2,6 +2,7 @@
 import os
 import tensorflow as tf
 from kits import utils
+from tensorflow.contrib.slim import nets
 
 ROOT_PATH = os.path.dirname(__file__)
 PATH = os.path.join(ROOT_PATH, 'cifar-10-batches-py')
@@ -9,7 +10,7 @@ LOG_PATH = os.path.join(ROOT_PATH, 'log')
 
 BATCH_SIZE = 64
 slim = tf.contrib.slim
-vgg = tf.contrib.slim.nets.vgg
+vgg = nets.vgg
 
 train_log_dir = LOG_PATH
 if not tf.gfile.Exists(train_log_dir):

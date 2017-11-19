@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 import os
+
+import numpy
 import torch
 import torchvision
 from PIL import Image
@@ -85,13 +87,13 @@ class CIFIR10(Dataset):
 
     def __getitem__(self, index):
         transform = transforms.Compose([transforms.ToTensor()])
-        image = Image.fromarray(self.data[index])
-        image = transform(image)
+        # image = Image.fromarray(self.data[index])
+        image = transform(self.data[index])
 
-        return image, transform(self.label[index])
+        return image, torch.from_numpy(self.label[index].astype(numpy.long))
 
 
-vgg = Vgg16().cuda()
+vgg = Vgg16()
 optimizer = torch.optim.Adam(vgg.parameters(), lr=1e-3)
 cross_entropy = nn.CrossEntropyLoss()
 
@@ -105,8 +107,8 @@ data_loader = DataLoader(train,
 for epoch in range(20):
     for i, batch in enumerate(data_loader):
         img, label = batch
-        img = Variable(img.cuda()).float()
-        label = Variable(label.cuda()).float()
+        img = Variable(img)
+        label = Variable(label)
         out = vgg(img)
         loss = cross_entropy(out, label)
 
