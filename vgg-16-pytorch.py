@@ -14,7 +14,7 @@ from kits import utils
 logging.config.fileConfig("./logging.conf")
 
 # create logger
-logger_name = "${NAME}"
+logger_name = "vgg-16-pytorch"
 log = logging.getLogger(logger_name)
 
 ROOT_PATH = os.path.dirname(__file__)
@@ -108,7 +108,7 @@ data_loader = DataLoader(train, batch_size=BATCH_SIZE, shuffle=True)
 
 test_loader = DataLoader(CIFIR10(data_set.test_set), batch_size=BATCH_SIZE, shuffle=True)
 log.info('training start...')
-for epoch in range(20):
+for epoch in range(40):
     log.info('epoch %d' % epoch)
     for i, batch in enumerate(data_loader):
         img, label = batch
