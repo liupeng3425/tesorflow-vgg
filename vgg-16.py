@@ -119,9 +119,9 @@ w_fc16 = weight_variable('w_fc16', [fc_neural_num[1], softmax_output_num])
 b_fc16 = bias_variable('b_fc16', [softmax_output_num])
 fc16 = tf.matmul(fc15, w_fc16) + b_fc16
 
-softmax = tf.nn.softmax(fc16)
+softmax = fc16
 y_label = tf.placeholder(tf.float32, [None, softmax_output_num])
-cross_entropy = -tf.reduce_mean(y_label * tf.log(softmax))
+cross_entropy = tf.losses.softmax_cross_entropy(y_label, softmax)
 
 train_step = tf.train.AdamOptimizer(1e-5).minimize(cross_entropy)
 
@@ -150,6 +150,7 @@ for i in range(40000):
         # print('prediction_sum')
         # print(numpy.sum(prediction[0:2], axis=1))
     if i % 500 == 0:
+        # using part of the test set  to evaluate to avoid OOM
         log.info("test accuracy %g" % accuracy.eval(feed_dict={
             data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]}))
 
