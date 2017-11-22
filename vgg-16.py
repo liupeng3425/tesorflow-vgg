@@ -24,7 +24,7 @@ def max_pool(input_img, name):
 
 
 def weight_variable(name, shape):
-    initial = tf.random_normal(shape, stddev=0.001)
+    initial = tf.truncated_normal(shape, mean=0, stddev=0.01)
     return tf.Variable(initial, name=name)
 
 
@@ -139,13 +139,14 @@ for i in range(40000):
     #     print(var)
 
     if i % 250 == 0:
-        loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, fc14],
-                                                    feed_dict={data: batch['data'],
-                                                               y_label: batch['labels_one_hot']})
+        loss, train_accuracy, prediction, fc15_v, fc14_v = \
+            sess.run([cross_entropy, accuracy, softmax, conv9, conv6],
+                     feed_dict={data: batch['data'],
+                                y_label: batch['labels_one_hot']})
         log.info("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
         # print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
-        print('prediction:')
-        print(prediction[0:2])
+        # print('prediction:')
+        # print(prediction[0:2])
         # print('prediction_sum')
         # print(numpy.sum(prediction[0:2], axis=1))
     if i % 500 == 0:
