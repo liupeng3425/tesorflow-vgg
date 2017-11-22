@@ -21,10 +21,8 @@ class DataSet(object):
 
         self.data_set['data'] = numpy.reshape(self.data_set['data'], [-1, 3, 32, 32])
         self.data_set['data'] = numpy.transpose(self.data_set['data'], [0, 2, 3, 1])
-        self.data_set['data'] = self.data_set['data'].astype(numpy.float32)
         self.test_set['data'] = numpy.reshape(self.test_set['data'], [-1, 3, 32, 32])
         self.test_set['data'] = numpy.transpose(self.test_set['data'], [0, 2, 3, 1])
-        self.test_set['data'] = self.test_set['data'].astype(numpy.float32)
         self.data_set['labels'] = numpy.reshape(self.data_set['labels'], [-1])
         self.data_set['labels_one_hot'] = numpy.eye(10)[self.data_set['labels']]
         self.test_set['labels'] = numpy.reshape(self.test_set['labels'], [-1])

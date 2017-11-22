@@ -1,17 +1,21 @@
 # -*- coding: utf-8 -*-
+import logging.config
 import os
 
 import numpy
 import torch
-import torchvision
-from PIL import Image
-from torch.autograd import Variable
 import torch.nn as nn
-import torch.nn.functional as functional
+from torch.autograd import Variable
 from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
 from kits import utils
+
+logging.config.fileConfig("./logging.conf")
+
+# create logger
+logger_name = "${NAME}"
+log = logging.getLogger(logger_name)
 
 ROOT_PATH = os.path.dirname(__file__)
 PATH = os.path.join(ROOT_PATH, 'cifar-10-batches-py')
@@ -79,36 +83,37 @@ class Vgg16(nn.Module):
 class CIFIR10(Dataset):
     def __init__(self, data) -> None:
         super().__init__()
-        self.data = data['data']
-        self.label = data['labels_one_hot']
+        self.data = data['data'].astype(numpy.float32)
+        self.label = data['labels']
 
     def __len__(self):
         return len(self.data)
 
     def __getitem__(self, index):
         transform = transforms.Compose([transforms.ToTensor()])
-        # image = Image.fromarray(self.data[index])
-        image = transform(self.data[index])
 
-        return image, torch.from_numpy(self.label[index].astype(numpy.long))
+        return transform(self.data[index]), self.label[index]
 
 
-vgg = Vgg16()
-optimizer = torch.optim.Adam(vgg.parameters(), lr=1e-3)
+log.info('initializing...')
+logging = logging
+vgg = Vgg16().cuda()
+optimizer = torch.optim.Adam(vgg.parameters(), lr=1e-5)
 cross_entropy = nn.CrossEntropyLoss()
 
 data_set = utils.read_data(PATH)
 
 train = CIFIR10(data_set.data_set)
-data_loader = DataLoader(train,
-                         batch_size=BATCH_SIZE,
-                         shuffle=True)
+data_loader = DataLoader(train, batch_size=BATCH_SIZE, shuffle=True)
 
+test_loader = DataLoader(CIFIR10(data_set.test_set), batch_size=BATCH_SIZE, shuffle=True)
+log.info('training start...')
 for epoch in range(20):
+    log.info('epoch %d' % epoch)
     for i, batch in enumerate(data_loader):
         img, label = batch
-        img = Variable(img)
-        label = Variable(label)
+        img = Variable(img).cuda()
+        label = Variable(label).cuda()
         out = vgg(img)
         loss = cross_entropy(out, label)
 
@@ -116,5 +121,17 @@ for epoch in range(20):
         loss.backward()
         optimizer.step()
 
-        if i % 500 == 499:
-            print('step %d, loss %g' % (i, loss.data[0]))
+        if i % 128 == 127:
+            log.info('step %d, loss %g' % (i, loss.data[0]))
+            correct = 0
+            test_index = 0
+            for test_img, test_label in test_loader:
+                test_img = Variable(test_img).cuda()
+                test_out = vgg(test_img)
+                prediction = numpy.argmax(test_out.cpu().data.numpy(), axis=1)
+                if test_index in range(BATCH_SIZE):
+                    if prediction[test_index] == test_label[test_index]:
+                        correct += 1
+
+            accuracy = (correct / len(test_loader))
+            log.info('accuracy %g' % accuracy)
