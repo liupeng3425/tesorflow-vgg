@@ -28,6 +28,9 @@ summary = {'step': [], 'loss': [], 'test accuracy': [], 'train accuracy': []}
 
 
 class Vgg16(nn.Module):
+    def __call__(self, *input, **kwargs):
+        return super().__call__(*input, **kwargs)
+
     def forward(self, image):
         vgg16 = self.vgg16(image)
         vgg16 = vgg16.view(-1, 512)

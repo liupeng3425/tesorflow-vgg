@@ -5,6 +5,9 @@ import tensorflow as tf
 
 from kits import utils
 
+os.environ["CUDA_DEVICE_ORDER"] = "PCI_BUS_ID"
+os.environ["CUDA_VISIBLE_DEVICES"] = "1"
+
 logging.config.fileConfig("./logging.conf")
 
 # create logger
@@ -13,6 +16,9 @@ log = logging.getLogger(logger_name)
 PATH = os.path.dirname(__file__)
 PATH = os.path.join(PATH, 'cifar-10-batches-py')
 BATCH_SIZE = 64
+log.info('BATCH_SIZE : %d' % BATCH_SIZE)
+
+summary = {'step': [], 'loss': [], 'test accuracy': [], 'train accuracy': []}
 
 
 def conv(input_img, kernel_size):
@@ -132,29 +138,35 @@ data_set = utils.read_data(PATH)
 
 sess = tf.InteractiveSession()
 sess.run(tf.global_variables_initializer())
-for i in range(40000):
+for i in range(80000):
     batch = data_set.next_batch_data(BATCH_SIZE)
 
-    # for var in tf.trainable_variables():
-    #     print(var)
-
-    if i % 250 == 0:
-        loss, train_accuracy, prediction, fc15_v, fc14_v = \
-            sess.run([cross_entropy, accuracy, softmax, conv9, conv6],
-                     feed_dict={data: batch['data'],
-                                y_label: batch['labels_one_hot']})
-        log.info("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
-        # print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
-        # print('prediction:')
-        # print(prediction[0:2])
-        # print('prediction_sum')
-        # print(numpy.sum(prediction[0:2], axis=1))
-    if i % 500 == 0:
-        # using part of the test set  to evaluate to avoid OOM
-        log.info("test accuracy %g" % accuracy.eval(feed_dict={
-            data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]}))
+    # if i % 250 == 0:
+    #     loss, train_accuracy, prediction = sess.run([cross_entropy, accuracy, softmax],
+    #                                                 feed_dict={data: batch['data'],
+    #                                                            y_label: batch['labels_one_hot']})
+    #     log.info("step %d, training accuracy %g, cross entropy %g" % (i, train_accuracy, loss))
+    #     # print(tf.get_default_graph().get_tensor_by_name('w_conv1:0').eval()[0][0][0][0])
+    #     # print('prediction:')
+    #     # print(prediction[0:2])
+    #     # print('prediction_sum')
+    #     # print(numpy.sum(prediction[0:2], axis=1))
+    #     summary['step'].append(i)
+    #     summary['loss'].append(loss)
+    #     summary['train accuracy'].append(train_accuracy)
+    # if i % 250 == 0:
+    #     # using part of the test set  to evaluate to avoid OOM
+    #     test_accuracy = accuracy.eval(feed_dict={
+    #         data: data_set.test_set['data'][0:2000], y_label: data_set.test_set['labels_one_hot'][0:2000]})
+    #     log.info("test accuracy %g" % test_accuracy)
+    #     summary['test accuracy'].append(test_accuracy)
 
     train_step.run(feed_dict={data: batch['data'], y_label: batch['labels_one_hot']})
 
 log.info("test accuracy %g" % accuracy.eval(feed_dict={
     data: data_set.test_set['data'][4000:8000], y_label: data_set.test_set['labels_one_hot'][4000:8000]}))
+
+print(summary['step'])
+print(summary['loss'])
+print(summary['train accuracy'])
+print(summary['test accuracy'])
